@@ -1,0 +1,27 @@
+{% extends "main/layout.html" %}
+{% load static %}
+
+{% block content %}
+    <div id="video">
+        <video width="320" height="240" controls>
+            <source src={% static 'main/mov_bbb.mp4' %} type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <div id="video-actions">
+            <button>Submit my video</button>
+            <button>Skip / Next</button>
+        </div>
+    </div>
+
+    <div id="label-container">
+        <p>Title: {{ video.title }}</p>
+    </div>
+
+    <div id="upnext">
+        <b>Up next</b>:<br>
+        <div id="upnext-videos">
+            Video 4<br>Video 7
+        </div>
+    </div>
+
+{% endblock %}

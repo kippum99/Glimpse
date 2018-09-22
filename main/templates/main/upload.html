@@ -1,0 +1,33 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+    <div style='padding:20px'>
+        <div style='display:block'>
+            <a href='{% url 'account' %}' style='color:#6abad1; font-size: 20px; font-weight:bold; display:inline'>My Account</a>
+            <h5 style='color:grey; display:inline'>Uploading a Video</h5>
+        </div>
+
+        <div id='video-upload'>
+            <p>+Upload a video clip</p>
+        </div>
+
+        <div id='label-upload'>
+            <select name='category'>
+                <option value=1>Category 1</option>
+                <option value=2>Category 2</option>
+            </select>
+            <select name='func'>
+                <option value=1>Function 1</option>
+                <option value=2>Function 2</option>
+            </select>
+
+            Label 1<input type=text name='label1'>
+        </div>
+
+        <div id='tag-upload'>
+            Custom Tags (separate with commas)
+            <textarea rows='8' cols='40'>
+            </textarea>
+        </div>
+    </div>
+{% endblock %}

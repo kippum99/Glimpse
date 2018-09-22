@@ -1,0 +1,31 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block content %}
+    <div style='padding:20px'>
+        <h4 style='color:#6abad1'>My Account</h4>
+
+        <div>
+            <div style='padding: 20px'>
+                <h6 style='display:inline'>My Uploaded Videos</h6>
+                <a href='{% url 'upload' %}' style='color:#6abad1'>+ Upload a video</a>
+                <div class='video-grid'>
+                    <div class='video-item'>
+                        <div class='thumbnail'>
+                            <a class='thumbnail' href='{% url 'watch' %}'>
+                                <img src='{% static 'main/thumbnail.png' %}'>
+                            </a>
+                        </div>
+                        <a href='{% url 'watch' %}'>My Video 1</a>
+                    </div>
+                </div>
+            </div>
+
+            <div style='padding: 20px'>
+                <h6>My Saved Videos</h6>
+                <div class='video-grid'>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
