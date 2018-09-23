@@ -30,10 +30,11 @@ def upload(request):
     return render(request, 'main/upload.html')
 
 def account(request):
-    return render(request, 'main/account.html')
-
-def watch(request):
-    return render(request, 'main/watch.html')
+    uploaded_videos = Video.objects.filter(uploader=request.user)
+    context = {
+        'uploaded_videos': uploaded_videos
+    }
+    return render(request, 'main/account.html', context)
 
 def submit_video(requests):
     #Django 1:14
@@ -57,7 +58,7 @@ class IndexView(LoginRequiredMixin, ListView):
     template_name = 'main/recent_uploads.html'
 
     def get_queryset(self):
-        videos = Video.objects.all()
+        videos = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
         if 'category' in self.request.GET:
             videos = videos.filter(categories=self.request.GET['category'])
         if 'func' in self.request.GET:
@@ -81,16 +82,20 @@ class WatchView(DetailView):
         path = urlparse(previous_url).path
 
         if 'watch' not in path:
-            query = QueryDict(urlparse(previous_url).query)
-            category = query.get('category')
-            func = query.get('func')
+            if 'account' in path:
+                upnext = Video.objects.filter(uploader=self.request.user)
+                cache.set('upnext', upnext)
+            else:
+                query = QueryDict(urlparse(previous_url).query)
+                category = query.get('category')
+                func = query.get('func')
 
-            upnext = Video.objects.all()
-            if category is not None:
-                upnext = upnext.filter(categories=category)
-            if func is not None:
-                upnext = upnext.filter(funcs=func)
-            cache.set('upnext', upnext)
+                upnext = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
+                if category is not None:
+                    upnext = upnext.filter(categories=category)
+                if func is not None:
+                    upnext = upnext.filter(funcs=func)
+                cache.set('upnext', upnext)
 
         upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
         cache.set('upnext', upnext)

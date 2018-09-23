@@ -10,14 +10,16 @@
                 <h6 style='display:inline'>My Uploaded Videos</h6>
                 <a href='{% url 'upload' %}' style='color:#6abad1'>+ Upload a video</a>
                 <div class='video-grid'>
-                    <div class='video-item'>
-                        <div class='thumbnail'>
-                            <a class='thumbnail' href='{% url 'watch2' %}'>
-                                <img src='{% static 'main/thumbnail.png' %}'>
-                            </a>
+                    {% for video in uploaded_videos %}
+                        <div class='video-item'>
+                            <div class='thumbnail'>
+                                <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                                    <img src='{% static 'main/thumbnail.png' %}'>
+                                </a>
+                            </div>
+                            <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
                         </div>
-                        <a href='{% url 'watch2' %}'>My Video 1</a>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
 

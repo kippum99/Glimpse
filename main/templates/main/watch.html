@@ -23,7 +23,9 @@
         </video>
         <div id="video-actions">
             <button>Submit my video</button>
-            <a href='{% url 'watch' upnext.0.id %}'>Skip / Next</a>
+            {% if upnext %}
+                <a href='{% url 'watch' upnext.0.id %}'>Skip / Next</a>
+            {% endif %}
         </div>
     </div>
 
