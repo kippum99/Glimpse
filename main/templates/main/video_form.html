@@ -1,0 +1,17 @@
+{% extends 'main/layout.html' %}
+
+{% block content %}
+    <div style='padding:20px'>
+        <div style='display:block'>
+            <a href='{% url 'account' %}' style='color:#6abad1; font-size: 20px; font-weight:bold; display:inline'>My Account</a>
+            <h5 style='color:grey; display:inline'>Uploading a Video</h5>
+        </div>
+
+        <form action='' method='post' enctype='multipart/form-data'>
+            {% csrf_token %}
+            {% include 'main/form_template.html' %}
+            <button type='submit'>Submit</button>
+        </form>
+
+    </div>
+{% endblock %}

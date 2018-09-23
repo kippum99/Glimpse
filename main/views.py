@@ -3,9 +3,11 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
+from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
+from .forms import UserForm
 from .models import Video
 
 def search(request):
@@ -46,7 +48,7 @@ def login_view(request):
 
 def logout_view(request):
     logout(request)
-    return render(request, 'main/login.html', {'message': None})
+    return render(request, 'registration/login.html', {'message': None})
 
 class IndexView(LoginRequiredMixin, ListView):
     template_name = 'main/recent_uploads.html'
@@ -70,3 +72,37 @@ class IndexView(LoginRequiredMixin, ListView):
 class WatchView(DetailView):
     model = Video
     template_name = 'main/watch.html'
+
+class UploadView(CreateView):
+    model = Video
+    fields = ['title', 'file', 'uploader', 'categories', 'funcs']
+
+class UserFormView(View):
+    form_class = UserForm
+    template_name = 'registration/signup.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = self.form_class(request.POST)
+
+        if form.is_valid():
+            user = form.save(commit=False)
+
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            group = form.cleaned_data['group']
+            user.set_password(password)
+            user.save()
+            user.groups.add(group)
+
+            user = authenticate(username=username, password=password)
+
+            if user is not None:
+                if user.is_active:
+                    login(request, user)
+                    return HttpResponseRedirect(reverse('index'))
+
+        return render(request, self.template_name, {'form': form})
