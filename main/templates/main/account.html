@@ -13,11 +13,11 @@
                     {% for video in uploaded_videos %}
                         <div class='video-item'>
                             <div class='thumbnail'>
-                                <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                                <a class='thumbnail' href='{% url 'edit' video.id %}'>
                                     <img src='{% static 'main/thumbnail.png' %}'>
                                 </a>
                             </div>
-                            <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                            <a href='{% url 'edit' video.id %}'>{{ video.title }}</a>
                         </div>
                     {% endfor %}
                 </div>
@@ -26,6 +26,17 @@
             <div style='padding: 20px'>
                 <h6>My Saved Videos</h6>
                 <div class='video-grid'>
+                    {% for video in saved_videos %}
+                        <div class='video-item'>
+                            <div class='thumbnail'>
+                                <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                                    <img src='{% static 'main/thumbnail.png' %}'>
+                                </a>
+                            </div>
+                            <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

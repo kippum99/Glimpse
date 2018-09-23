@@ -1,7 +1,7 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
@@ -31,8 +31,10 @@ def upload(request):
 
 def account(request):
     uploaded_videos = Video.objects.filter(uploader=request.user)
+    saved_videos = Video.objects.filter(savers=request.user)
     context = {
-        'uploaded_videos': uploaded_videos
+        'uploaded_videos': uploaded_videos,
+        'saved_videos': saved_videos,
     }
     return render(request, 'main/account.html', context)
 
@@ -83,7 +85,7 @@ class WatchView(DetailView):
 
         if 'watch' not in path:
             if 'account' in path:
-                upnext = Video.objects.filter(uploader=self.request.user)
+                upnext = Video.objects.filter(savers=self.request.user)
                 cache.set('upnext', upnext)
             else:
                 query = QueryDict(urlparse(previous_url).query)
@@ -108,6 +110,14 @@ class WatchView(DetailView):
 class UploadView(CreateView):
     model = Video
     fields = ['title', 'file', 'uploader', 'categories', 'funcs']
+
+class VideoEdit(UpdateView):
+    model = Video
+    fields = ['title', 'file', 'uploader', 'categories', 'funcs']
+
+class VideoDelete(DeleteView):
+    model = Video
+    success_url = reverse_lazy('account')
 
 class UserFormView(View):
     form_class = UserForm
