@@ -1,15 +1,29 @@
 {% extends "main/layout.html" %}
 {% load static %}
 
+{% block header %}
+    <form action="{% url 'search' %}" class="search" method="get">
+        <input name="title_search" type="text" placeholder="Title Search">
+        <button>Search</button>
+    </form>
+
+    <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
+    <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
+    {{ user.username }}
+    {{ group.name }}
+    <a href='{% url 'logout' %}'>Sign out</a>
+{% endblock %}
+
 {% block content %}
     <div id="video">
+        <button style='display:block'>Save this video</button>
         <video width="320" height="240" controls>
             <source src={% static 'main/mov_bbb.mp4' %} type="video/mp4">
             Your browser does not support the video tag.
         </video>
         <div id="video-actions">
             <button>Submit my video</button>
-            <button>Skip / Next</button>
+            <a href='{% url 'watch' upnext.0.id %}'>Skip / Next</a>
         </div>
     </div>
 
@@ -21,7 +35,16 @@
     <div id="upnext">
         <b>Up next</b>:<br>
         <div id="upnext-videos">
-            Video 4<br>Video 7
+            {% for video in upnext %}
+                <div class='video-item'>
+                    <div class='thumbnail'>
+                        <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                            <img src='{% static 'main/thumbnail.png' %}'>
+                        </a>
+                    </div>
+                    <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                </div>
+            {% endfor %}
         </div>
     </div>
 

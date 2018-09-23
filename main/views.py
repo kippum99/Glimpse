@@ -1,11 +1,14 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import HttpResponse, HttpResponseRedirect
+from django.core.cache import cache
+from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.urls import reverse
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+
+from urllib.parse import urlparse
 
 from .forms import UserForm
 from .models import Video
@@ -72,6 +75,30 @@ class IndexView(LoginRequiredMixin, ListView):
 class WatchView(DetailView):
     model = Video
     template_name = 'main/watch.html'
+
+    def get_context_data(self, **kwargs):
+        previous_url = self.request.META.get('HTTP_REFERER')
+        path = urlparse(previous_url).path
+
+        if 'watch' not in path:
+            query = QueryDict(urlparse(previous_url).query)
+            category = query.get('category')
+            func = query.get('func')
+
+            upnext = Video.objects.all()
+            if category is not None:
+                upnext = upnext.filter(categories=category)
+            if func is not None:
+                upnext = upnext.filter(funcs=func)
+            cache.set('upnext', upnext)
+
+        upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
+        cache.set('upnext', upnext)
+
+        context = super().get_context_data(**kwargs)
+        context['upnext'] = upnext
+
+        return context
 
 class UploadView(CreateView):
     model = Video
