@@ -13,25 +13,40 @@
 
             #logo {
                 float: left;
-                width: 40%
+                width: 25%
             }
 
-            #header-right{
-                float: left;
-                width: 60%;
-                text-align: right;
+            #title-search {
+                float:left;
+                width: 50%;
             }
 
-            #filter-container {
-                float: left;
-                background-color: #f7f7f7;
-                width: 35%;
+            #filter-bar {
                 padding: 20px;
             }
 
-            #category-container {
+            #filter-container {
+                padding: 20px;
+            }
+
+            #industry-container {
                 float: left;
-                width: 50%;
+                width: 20%;
+            }
+
+            #func-container {
+                float: left;
+                width: 20%;
+            }
+
+            #experience-container {
+                float: left;
+                width: 20%;
+            }
+
+            #jobtype-container {
+                float: left;
+                width: 20%;
             }
 
             .filter-button {
@@ -49,14 +64,7 @@
                 color: white;
             }
 
-            #func-container {
-                float: left;
-                width: 50%;
-            }
-
             #main {
-                float: left;
-                width: 65%;
                 padding: 20px;
             }
 
@@ -155,10 +163,8 @@
                 <a style='font-size:40px; color:#6abad1' href='{% url 'index' %}'>Glimpse</a>
             </div>
 
-            <div id='header-right'>
-                {% block header %}
-                {% endblock %}
-            </div>
+            {% block header %}
+            {% endblock %}
         </div>
 
         <div class="content">

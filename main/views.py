@@ -109,11 +109,11 @@ class WatchView(DetailView):
 
 class UploadView(CreateView):
     model = Video
-    fields = ['title', 'file', 'uploader', 'categories', 'funcs']
+    fields = ['title', 'file', 'uploader', 'categories', 'funcs', 'experiences', 'jobtypes']
 
 class VideoEdit(UpdateView):
     model = Video
-    fields = ['title', 'file', 'uploader', 'categories', 'funcs']
+    fields = ['title', 'file', 'uploader', 'categories', 'funcs', 'experiences', 'jobtypes']
 
 class VideoDelete(DeleteView):
     model = Video

@@ -97,6 +97,12 @@
           return obj;
         }
 
+        function showFilters() {
+            document.getElementById('main-filters').style.display = 'none';
+            filters = document.getElementById('filter-container');
+            filters.style.display = 'block';
+        }
+
         function selectCategory(evt, category) {
             // change css classname for active display
             var categoryButtons = document.querySelectorAll('#category-container .filter-button');
@@ -149,11 +155,11 @@
 {% endblock %}
 
 {% block header %}
-    <form action="{% url 'search' %}" class="search" method="get">
+    <form id='title-search' action="{% url 'search' %}" class="search" method="get">
         <input name="title_search" type="text" placeholder="Title Search">
         <button>Search</button>
     </form>
-
+    
     <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
     <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
     {{ user.username }}
@@ -162,30 +168,41 @@
 {% endblock %}
 
 {% block content %}
-    <div id="filter-container">
-        <form action='{% url 'index' %}' method='get' class="search">
+    <div id='filter-bar'>
+        <form action='{% url 'index' %}' method='get' class="search" style='display:inline-block'>
             <input name="location_search" type="text" placeholder="Los Angeles, CA">
             <button>Search</button>
         </form>
-
-        <div id="category-container">
-            <button class="filter-button" data-id=1 onclick="selectCategory(event, 1)">Category 1</button>
-            <button class="filter-button" data-id=2 onclick="selectCategory(event, 2)">Category 2</button>
-            <button class="filter-button" data-id=3 onclick="selectCategory(event, 3)">Category 3</button>
-        </div>
-
-        <div id="func-container">
-            <button class="filter-button" data-id=1 onclick="selectFunc(event, 1)">Function 1</button>
-            <button class="filter-button" data-id=2 onclick="selectFunc(event, 2)">Function 2</button>
-            <button class="filter-button" data-id=3 onclick="selectFunc(event, 3)">Function 3</button>
+        <button onclick='showFilters()' style='display:inline-block'>Filters</button>
+        <div id='main-filters' style='display:inline-block'>
+            All Positions
         </div>
     </div>
-
+    <hr>
+    <div id="filter-container" style='display:none'>
+        <form action='{% url 'index' %}' method='get'>
+            <div id='industry-container'>
+                Industry Tribe<br>
+                <input type='radio'>Aerospace</input>
+                <input type='radio'><AI></input>
+            </div>
+            <div id='func-container'>
+                Functional Tribe<br>
+                <input type='radio'></input>
+            </div>
+            <div id='experience-container'>
+                Experience Level<br>
+                <input type='radio'></input>
+            </div>
+            <div id='jobtype-container'>
+                Job Type<br>
+                <input type='radio'></input>
+            </div>
+            <button type='submit'>Apply</button>
+        </form>
+    </div>
+    <hr>
     <div id="main">
-        <div id='filters-selected' style='padding:5px'>
-            Filters selected:
-        </div>
-
         {% block main %}
         {% endblock %}
 
