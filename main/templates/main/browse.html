@@ -156,10 +156,16 @@
 
 {% block header %}
     <form id='title-search' action="{% url 'search' %}" class="search" method="get">
+        <select class='industry-dropdown'>
+            <option>All Industries</option>
+            {% for industry in industries %}
+                <option>{{ industry.name }}</option>
+            {% endfor %}
+        </select>
         <input name="title_search" type="text" placeholder="Title Search">
         <button>Search</button>
     </form>
-    
+
     <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
     <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
     {{ user.username }}
@@ -175,7 +181,8 @@
         </form>
         <button onclick='showFilters()' style='display:inline-block'>Filters</button>
         <div id='main-filters' style='display:inline-block'>
-            All Positions
+            <a class='active'>All Positions</a>
+            <a
         </div>
     </div>
     <hr>
@@ -183,8 +190,9 @@
         <form action='{% url 'index' %}' method='get'>
             <div id='industry-container'>
                 Industry Tribe<br>
-                <input type='radio'>Aerospace</input>
-                <input type='radio'><AI></input>
+                {% for industry in industries %}
+                    <input type='checkbox' name='industry' value='{{ industry.id }}'>{{ industry.name }}</input><br>
+                {% endfor %}
             </div>
             <div id='func-container'>
                 Functional Tribe<br>

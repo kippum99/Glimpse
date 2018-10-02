@@ -1,4 +1,4 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
 from django.urls import reverse, reverse_lazy
@@ -11,18 +11,39 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from urllib.parse import urlparse
 
 from .forms import UserForm
-from .models import Video
+from .models import Category, Video
 
+@login_required
+def index(request):
+    videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
+    if 'industry' in request.GET:
+        videos = videos.filter(categories__in=request.GET.getlist('industry')).distinct()
+    if 'func' in request.GET:
+        videos = videos.filter(funcs=request.GET['func'])
+        request.user.groups.first()
+
+    context = {
+        'videos': videos,
+        'group': request.user.groups.first(),
+        'industries': Category.objects.all(),
+    }
+    return render(request, 'main/search.html', context)
+
+@login_required
 def search(request):
     video_title = request.GET['title_search']
-    videos = Video.objects.filter(title__icontains=video_title)
-    if 'category' in request.GET:
-        videos = videos.filter(categories=request.GET['category'])
+
+    videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
+    videos = videos.filter(title__icontains=video_title)
+    if 'industry' in request.GET:
+        videos = videos.filter(categories__in=request.GET.getlist('industry')).distinct()
     if 'func' in request.GET:
         videos = videos.filter(funcs=request.GET['func'])
 
     context = {
-        'videos': videos
+        'videos': videos,
+        'group': request.user.groups.first(),
+        'industries': Category.objects.all(),
     }
     return render(request, 'main/search.html', context)
 
@@ -39,7 +60,7 @@ def account(request):
     return render(request, 'main/account.html', context)
 
 def submit_video(requests):
-    #Django 1:14
+    #Harvard Django 1:14
     return
 
 def login_view(request):
@@ -56,24 +77,25 @@ def logout_view(request):
     logout(request)
     return render(request, 'registration/login.html', {'message': None})
 
-class IndexView(LoginRequiredMixin, ListView):
-    template_name = 'main/recent_uploads.html'
-
-    def get_queryset(self):
-        videos = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
-        if 'category' in self.request.GET:
-            videos = videos.filter(categories=self.request.GET['category'])
-        if 'func' in self.request.GET:
-            videos = videos.filter(funcs=self.request.GET['func'])
-        self.videos = videos
-        return videos
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['videos'] = self.videos
-        context['user'] = self.request.user
-        context['group'] = self.request.user.groups.first()
-        return context
+# class IndexView(LoginRequiredMixin, ListView):
+#     template_name = 'main/recent_uploads.html'
+#
+#     def get_queryset(self):
+#         videos = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
+#         if 'industry' in self.request.GET:
+#             videos = videos.filter(categories=self.request.GET['industry'])
+#         if 'func' in self.request.GET:
+#             videos = videos.filter(funcs=self.request.GET['func'])
+#         self.videos = videos
+#         return videos
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['videos'] = self.videos
+#         context['user'] = self.request.user
+#         context['group'] = self.request.user.groups.first()
+#         context['industries'] = Category.objects.all()
+#         return context
 
 class WatchView(DetailView):
     model = Video
