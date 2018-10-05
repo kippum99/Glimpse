@@ -155,22 +155,20 @@
 {% endblock %}
 
 {% block header %}
-    <form id='title-search' action="{% url 'search' %}" class="search" method="get">
-        <select class='industry-dropdown'>
-            <option>All Industries</option>
-            {% for industry in industries %}
-                <option>{{ industry.name }}</option>
-            {% endfor %}
-        </select>
-        <input name="title_search" type="text" placeholder="Title Search">
-        <button>Search</button>
-    </form>
-
-    <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
-    <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
-    {{ user.username }}
-    {{ group.name }}
-    <a href='{% url 'logout' %}'>Sign out</a>
+    <div class='header-user'>
+        <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
+        <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
+        {{ user.username }}
+        {{ group.name }}
+        <a href='{% url 'logout' %}'>Sign out</a>
+    </div>
+    <br>
+    <div class='search-functions'>
+        <form id='title-search' action="{% url 'search' %}" class="search" method="get">
+            <input name="title_search" type="text" placeholder="Title Search">
+            <button>Search</button>
+        </form>
+    </div>
 {% endblock %}
 
 {% block content %}

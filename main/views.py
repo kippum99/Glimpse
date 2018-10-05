@@ -129,6 +129,15 @@ class WatchView(DetailView):
 
         return context
 
+@login_required
+def save_video(request):
+    video_id = None
+    user_id = request.user.id
+    if request.method == 'GET':
+        video_id = request.GET['video_id']
+        Video.objects.get(pk=video_id).savers.add(user_id)
+    return HttpResponse(user_id)
+
 class UploadView(CreateView):
     model = Video
     fields = ['title', 'file', 'uploader', 'categories', 'funcs', 'experiences', 'jobtypes']

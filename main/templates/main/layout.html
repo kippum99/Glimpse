@@ -8,17 +8,15 @@
             .header {
                 padding: 20px;
                 border-bottom: 1px solid #e8e8e8;
-                height: 100px;
             }
 
             #logo {
                 float: left;
-                width: 25%
+                width: 25%;
             }
 
-            #title-search {
-                float:left;
-                width: 50%;
+            .header-user{
+                float: right;
             }
 
             #filter-bar {
@@ -161,7 +159,7 @@
     <body>
         <div class="header">
             <div id='logo'>
-                <a style='font-size:40px; color:#6abad1' href='{% url 'index' %}'>Glimpse</a>
+                <a style='font-size:30px; color:#6abad1' href='{% url 'index' %}'>Glimpse</a>
             </div>
 
             {% block header %}

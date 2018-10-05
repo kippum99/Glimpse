@@ -1,31 +1,64 @@
 {% extends "main/layout.html" %}
 {% load static %}
 
-{% block header %}
-    <form action="{% url 'search' %}" class="search" method="get">
-        <input name="title_search" type="text" placeholder="Title Search">
-        <button>Search</button>
-    </form>
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#save').click(function(){
+            video_id = {{ video.pk }};
+            $.get('/save_video/', {video_id: video_id}, function(data){
+                $('#save').attr('src', '{% static 'main/heart.png' %}');
+                console.log(data);
+            });
+        });
+    });
 
-    <a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
-    <a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
-    {{ user.username }}
-    {{ group.name }}
-    <a href='{% url 'logout' %}'>Sign out</a>
+    function submit_video(){
+        container = document.getElementById('submit-container');
+        container.innerHTML += 'Select a video you want to submit:<br>';
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                container.innerHTML += this.responseText;
+            }
+        };
+        xhttp.open('GET', '{% static 'main/testajax.php' %}', true);
+        xhttp.send();
+    }
+</script>
+{% endblock %}
+
+{% block header %}
+<form action="{% url 'search' %}" class="search" method="get">
+    <input name="title_search" type="text" placeholder="Title Search">
+    <button>Search</button>
+</form>
+
+<a href='{% url 'upload' %}' style='color:#6abad1'>Upload a video</a>
+<a href='{% url 'account' %}' style='font-weight:bold; color:#6abad1'>My Account</a>
+{{ user.username }}
+{{ group.name }}
+<a href='{% url 'logout' %}'>Sign out</a>
 {% endblock %}
 
 {% block content %}
     <div id="video">
         <button style='display:block'>Save this video</button>
+        <img id='save' src='{% static 'main/empty_heart.png' %}' width='30px' style='display:block;float:right'>
         <video width="320" height="240" controls>
-            <source src={% static 'main/mov_bbb.mp4' %} type="video/mp4">
+            <source src='{% static 'main/mov_bbb.mp4' %}' type="video/mp4">
             Your browser does not support this video.
         </video>
         <div id="video-actions">
-            <button>Submit my video</button>
+            <button onclick='submit_video()'>Submit my video</button>
             {% if upnext %}
                 <a href='{% url 'watch' upnext.0.id %}'>Skip / Next</a>
             {% endif %}
+        </div>
+        <hr>
+        <div id='submit-container'>
         </div>
     </div>
 
