@@ -1,7 +1,7 @@
-from django.contrib.auth.models import User
-from .models import Video
+from .models import Employer, Tribal, User, Video
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+from django.db import transaction
 
 # class UserForm(forms.ModelForm):
 #     password = forms.CharField(widget=forms.PasswordInput)
@@ -22,12 +22,30 @@ class JSSignUpForm(UserCreationForm):
             user.save()
         return user
 
-class EmpSignUpForm(forms.ModelForm):
-    class Meta:
+class EmpSignUpForm(UserCreationForm):
+    tribals = forms.ModelMultipleChoiceField(
+        queryset=Tribal.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True
+    )
+    class Meta(UserCreationForm.Meta):
         model = User
-        fields = ['username']
 
-class VideoForm(forms.ModelForm):
+    @transaction.atomic
+    def save(self):
+        user = super().save(commit=False)
+        user.is_emp = True
+        user.save()
+        employer = Employer.objects.create(user=user)
+        employer.tribals.add(*self.cleaned_data.get('tribals'))
+        return user
+
+class EmpVideoForm(forms.ModelForm):
     class Meta:
         model = Video
         fields = ['file', 'title', 'jobtypes', 'city', 'state', 'remote', 'role', 'categories', 'tribals']
+
+class JSVideoForm(forms.ModelForm):
+    class Meta:
+        model = Video
+        fields = ['file', 'title', 'jobtypes', 'categories', 'tribals']

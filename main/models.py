@@ -7,18 +7,22 @@ class User(AbstractUser):
     is_js = models.BooleanField(default=False)
     is_emp = models.BooleanField(default=False)
 
-class Jobseeker(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
-
-class Category(models.Model):
-    name = models.CharField(max_length=50)
-    techrole = models.BooleanField(null=True)
+class Tribal(models.Model):
+    name = models.CharField(max_length=30)
 
     def __str__(self):
         return f'{self.name}'
 
-class Tribal(models.Model):
-    name = models.CharField(max_length=30)
+class Jobseeker(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+
+class Employer(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    tribals = models.ManyToManyField(Tribal)
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+    techrole = models.BooleanField(null=True)
 
     def __str__(self):
         return f'{self.name}'
@@ -44,7 +48,7 @@ class Video(models.Model):
     tribals = models.ManyToManyField(Tribal)
     city = models.CharField(max_length=20, null=True)
     state = USStateField(null=True)
-    remote = models.BooleanField()
+    remote = models.BooleanField(default=False)
 
     role = models.CharField(max_length=1, choices=(('T', 'Tech'), ('M', 'MBA / Management')))
 

@@ -7,11 +7,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.views import View
 from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.shortcuts import redirect
 
 from urllib.parse import urlparse
 
-from .forms import VideoForm, JSSignUpForm, EmpSignUpForm
-from .models import User, Category, Video
+from .forms import JSVideoForm, EmpVideoForm, JSSignUpForm, EmpSignUpForm
+from .models import User, Category, Jobtype, Tribal, Video
 
 @login_required
 def index(request):
@@ -22,12 +23,13 @@ def index(request):
     # if 'func' in request.GET:
     #     videos = videos.filter(funcs=request.GET['func'])
     #     request.user.groups.first()
-
     context = {
         'videos': videos,
         #'group': request.user.groups.first(),
         'techs': Category.objects.filter(techrole=1),
         'mbas': Category.objects.filter(techrole=0),
+        'tribals': Tribal.objects.all(),
+        'jobtypes': Jobtype.objects.all(),
     }
     return render(request, 'main/search.html', context)
 
@@ -120,6 +122,7 @@ class WatchView(DetailView):
                 category = query.get('category')
                 func = query.get('func')
 
+                upnext = Video.objects.all()
                 #upnext = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
                 if category is not None:
                     upnext = upnext.filter(categories=category)
@@ -156,16 +159,22 @@ def submit_video(request):
 #     fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
 
 class UploadView(CreateView):
-    form_class = VideoForm
-    template_name = 'main/upload.html'
-    template_name_a = 'main/upload_a.html'
+    form_class = JSVideoForm
+    template_name = 'main/upload_js.html'
 
     def get(self, request):
+        if request.user.is_js: #if user is job seeker
+            self.form_class = JSVideoForm
+            self.template_name = 'main/upload_js.html'
+        elif request.user.is_emp: # if user is employer
+            self.form_class = EmpVideoForm
+            self.template_name = 'main/upload_emp.html'
         form = self.form_class(None)
-        #if request.user.groups.first().pk == 2: #if user is job seeker
-            #return render(request, self.template_name_a, {'form': form})
-        #else: # if user is employer
-            #return render(request, self.template_name, {'form': form})
+        return render(request, self.template_name, {'form': form})
+
+    def form_valid(self, form):
+        form.instance.uploader = self.request.user
+        return super().form_valid(form)
 
 class VideoEdit(UpdateView):
     model = Video
@@ -180,10 +189,20 @@ class JSSignUpView(CreateView):
     form_class = JSSignUpForm
     template_name = 'registration/signup_js.html'
 
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('index')
+
 class EmpSignUpView(CreateView):
     model = User
     form_class = EmpSignUpForm
     template_name = 'registration/signup_emp.html'
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('index')
 
 # class UserFormView(View):
 #     form_class = UserForm

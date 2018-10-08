@@ -200,6 +200,18 @@
                     <input type='checkbox' name='category' value='{{ mba.id }}'>{{ mba.name }}</input><br>
                 {% endfor %}
             </div>
+            <div id='tribal-container'>
+                Tribal Interests<br>
+                {% for tribal in tribals %}
+                    <input type='checkbox' name='tribal' value='{{ tribal.id }}'>{{ tribal.name }}</input><br>
+                {% endfor %}
+            </div>
+            <div id='jobtype-container'>
+                Type<br>
+                {% for jobtype in jobtypes %}
+                    <input type='checkbox' name='jobtype' value='{{ jobtype.id }}'>{{ jobtype.name }}</input><br>
+                {% endfor %}
+            </div>
             <button type='submit'>Apply</button>
         </form>
     </div>
