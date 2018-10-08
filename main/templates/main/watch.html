@@ -7,9 +7,8 @@
     $(document).ready(function(){
         $('#save').click(function(){
             video_id = {{ video.pk }};
-            $.get('/save_video/', {video_id: video_id}, function(data){
+            $.get('/save_video', {video_id: video_id}, function(data){
                 $('#save').attr('src', '{% static 'main/heart.png' %}');
-                console.log(data);
             });
         });
     });
@@ -17,15 +16,18 @@
     function submit_video(){
         container = document.getElementById('submit-container');
         container.innerHTML += 'Select a video you want to submit:<br>';
-
-        var xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4 && this.status == 200) {
-                container.innerHTML += this.responseText;
-            }
-        };
-        xhttp.open('GET', '{% static 'main/testajax.php' %}', true);
-        xhttp.send();
+        //
+        // var xhttp = new XMLHttpRequest();
+        // xhttp.onreadystatechange = function() {
+        //     if (this.readyState == 4 && this.status == 200) {
+        //         container.innerHTML += this.responseText;
+        //     }
+        // };
+        // xhttp.open('GET', '{% static 'main/testajax.php' %}', true);
+        // xhttp.send();
+        $.get('/submit_video', function(data){
+            container.innerHTML += data;
+        });
     }
 </script>
 {% endblock %}

@@ -12,7 +12,10 @@ urlpatterns = [
     path('account', views.account, name='account'),
     path('watch/<int:pk>', views.WatchView.as_view(), name='watch'),
     re_path(r'^save_video/$', views.save_video, name='save_video'),
+    path('submit_video', views.submit_video, name='submit_video'),
     path('accounts/', include('django.contrib.auth.urls')),
     path('logout', views.logout_view, name='logout'),
-    path('signup', views.UserFormView.as_view(), name='signup'),
+    path('signup', views.signup_view, name='signup'),
+    path('signup/jobseeker', views.JSSignUpView.as_view(), name='js_signup'),
+    path('signup/employer', views.EmpSignUpView.as_view(), name='emp_signup'),
 ]

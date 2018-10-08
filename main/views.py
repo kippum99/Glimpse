@@ -10,22 +10,24 @@ from django.views.generic.edit import CreateView, UpdateView, DeleteView
 
 from urllib.parse import urlparse
 
-from .forms import UserForm
-from .models import Category, Video
+from .forms import VideoForm, JSSignUpForm, EmpSignUpForm
+from .models import User, Category, Video
 
 @login_required
 def index(request):
-    videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
-    if 'industry' in request.GET:
-        videos = videos.filter(categories__in=request.GET.getlist('industry')).distinct()
-    if 'func' in request.GET:
-        videos = videos.filter(funcs=request.GET['func'])
-        request.user.groups.first()
+    videos = Video.objects.all()
+    #videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
+    # if 'category' in request.GET:
+    #     videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
+    # if 'func' in request.GET:
+    #     videos = videos.filter(funcs=request.GET['func'])
+    #     request.user.groups.first()
 
     context = {
         'videos': videos,
-        'group': request.user.groups.first(),
-        'industries': Category.objects.all(),
+        #'group': request.user.groups.first(),
+        'techs': Category.objects.filter(techrole=1),
+        'mbas': Category.objects.filter(techrole=0),
     }
     return render(request, 'main/search.html', context)
 
@@ -33,7 +35,8 @@ def index(request):
 def search(request):
     video_title = request.GET['title_search']
 
-    videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
+    videos = Video.objects.all()
+    #videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
     videos = videos.filter(title__icontains=video_title)
     if 'industry' in request.GET:
         videos = videos.filter(categories__in=request.GET.getlist('industry')).distinct()
@@ -42,7 +45,7 @@ def search(request):
 
     context = {
         'videos': videos,
-        'group': request.user.groups.first(),
+        #'group': request.user.groups.first(),
         'industries': Category.objects.all(),
     }
     return render(request, 'main/search.html', context)
@@ -76,6 +79,9 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return render(request, 'registration/login.html', {'message': None})
+
+def signup_view(request):
+    return render(request, 'registration/signup.html')
 
 # class IndexView(LoginRequiredMixin, ListView):
 #     template_name = 'main/recent_uploads.html'
@@ -114,7 +120,7 @@ class WatchView(DetailView):
                 category = query.get('category')
                 func = query.get('func')
 
-                upnext = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
+                #upnext = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
                 if category is not None:
                     upnext = upnext.filter(categories=category)
                 if func is not None:
@@ -136,11 +142,30 @@ def save_video(request):
     if request.method == 'GET':
         video_id = request.GET['video_id']
         Video.objects.get(pk=video_id).savers.add(user_id)
-    return HttpResponse(user_id)
+    return HttpResponse()
+
+@login_required
+def submit_video(request):
+    context = {
+        'videos': Video.objects.filter(uploader=request.user)
+    }
+    return render(request, 'main/submit_video.html', context)
+
+# class UploadView(CreateView):
+#     model = Video
+#     fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
 
 class UploadView(CreateView):
-    model = Video
-    fields = ['title', 'file', 'uploader', 'categories', 'funcs', 'experiences', 'jobtypes']
+    form_class = VideoForm
+    template_name = 'main/upload.html'
+    template_name_a = 'main/upload_a.html'
+
+    def get(self, request):
+        form = self.form_class(None)
+        #if request.user.groups.first().pk == 2: #if user is job seeker
+            #return render(request, self.template_name_a, {'form': form})
+        #else: # if user is employer
+            #return render(request, self.template_name, {'form': form})
 
 class VideoEdit(UpdateView):
     model = Video
@@ -150,32 +175,42 @@ class VideoDelete(DeleteView):
     model = Video
     success_url = reverse_lazy('account')
 
-class UserFormView(View):
-    form_class = UserForm
-    template_name = 'registration/signup.html'
+class JSSignUpView(CreateView):
+    model = User
+    form_class = JSSignUpForm
+    template_name = 'registration/signup_js.html'
 
-    def get(self, request):
-        form = self.form_class(None)
-        return render(request, self.template_name, {'form': form})
+class EmpSignUpView(CreateView):
+    model = User
+    form_class = EmpSignUpForm
+    template_name = 'registration/signup_emp.html'
 
-    def post(self, request):
-        form = self.form_class(request.POST)
-
-        if form.is_valid():
-            user = form.save(commit=False)
-
-            username = form.cleaned_data['username']
-            password = form.cleaned_data['password']
-            group = form.cleaned_data['group']
-            user.set_password(password)
-            user.save()
-            user.groups.add(group)
-
-            user = authenticate(username=username, password=password)
-
-            if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return HttpResponseRedirect(reverse('index'))
-
-        return render(request, self.template_name, {'form': form})
+# class UserFormView(View):
+#     form_class = UserForm
+#     template_name = 'registration/signup.html'
+#
+#     def get(self, request):
+#         form = self.form_class(None)
+#         return render(request, self.template_name, {'form': form})
+#
+#     def post(self, request):
+#         form = self.form_class(request.POST)
+#
+#         if form.is_valid():
+#             user = form.save(commit=False)
+#
+#             username = form.cleaned_data['username']
+#             password = form.cleaned_data['password']
+#             group = form.cleaned_data['group']
+#             user.set_password(password)
+#             user.save()
+#             user.groups.add(group)
+#
+#             user = authenticate(username=username, password=password)
+#
+#             if user is not None:
+#                 if user.is_active:
+#                     login(request, user)
+#                     return HttpResponseRedirect(reverse('index'))
+#
+#         return render(request, self.template_name, {'form': form})

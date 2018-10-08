@@ -1,0 +1,16 @@
+{% load static %}
+<div class='video-grid'>
+    {% if videos %}
+        {% for video in videos %}
+            <div class='video-item'>
+                <div class='thumbnail'>
+                    <img src='{% static 'main/thumbnail.png' %}'>
+                </div>
+                {{ video.title }}
+                <button type='submit'>Submit</button>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>You have not uploaded any videos.</p>
+    {% endif %}
+</div>

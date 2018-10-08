@@ -98,7 +98,7 @@
         }
 
         function showFilters() {
-            document.getElementById('main-filters').style.display = 'none';
+            //document.getElementById('main-filters').style.display = 'none';
             filters = document.getElementById('filter-container');
             filters.style.display = 'block';
         }
@@ -162,52 +162,47 @@
         {{ group.name }}
         <a href='{% url 'logout' %}'>Sign out</a>
     </div>
-    <br>
-    <div class='search-functions'>
-        <form id='title-search' action="{% url 'search' %}" class="search" method="get">
-            <input name="title_search" type="text" placeholder="Title Search">
-            <button>Search</button>
-        </form>
-    </div>
 {% endblock %}
 
 {% block content %}
-    <div id='filter-bar'>
-        <form action='{% url 'index' %}' method='get' class="search" style='display:inline-block'>
-            <input name="location_search" type="text" placeholder="Los Angeles, CA">
+    <div class='search-functions'>
+        <a>TECH TALENT</a>
+        <a>MBAs / MANAGEMENT</a>
+        <form id='title-search' action="{% url 'search' %}" class="search" method="get" style='display:inline'>
+            <input name="title_search" type="text" placeholder="Search by Job Title or Role">
             <button>Search</button>
         </form>
-        <button onclick='showFilters()' style='display:inline-block'>Filters</button>
-        <div id='main-filters' style='display:inline-block'>
-            <a class='active'>All Positions</a>
-            <a
+        <button onclick='showFilters()'>Advanced Filters</button>
+        <div id='filter-bar'>
+            <form action='{% url 'index' %}' method='get' class="search" style='display:inline-block'>
+                <input name="location_search" type="text" placeholder="Los Angeles, CA">
+                <button>Search</button>
+            </form>
+            <a>STARTUPS</a>
+            <a>FORTUNE 500</a>
+            <a>CONSULTING</a>
+            <a>BUY-SIDE</a>
+            <a>SELL-SIDE</a>
         </div>
     </div>
     <hr>
     <div id="filter-container" style='display:none'>
         <form action='{% url 'index' %}' method='get'>
-            <div id='industry-container'>
-                Industry Tribe<br>
-                {% for industry in industries %}
-                    <input type='checkbox' name='industry' value='{{ industry.id }}'>{{ industry.name }}</input><br>
+            <div id='tech-container'>
+                Tech Roles<br>
+                {% for tech in techs %}
+                    <input type='checkbox' name='category' value='{{ tech.id }}'>{{ tech.name }}</input><br>
                 {% endfor %}
             </div>
-            <div id='func-container'>
-                Functional Tribe<br>
-                <input type='radio'></input>
-            </div>
-            <div id='experience-container'>
-                Experience Level<br>
-                <input type='radio'></input>
-            </div>
-            <div id='jobtype-container'>
-                Job Type<br>
-                <input type='radio'></input>
+            <div id='mba-container'>
+                MBA / Management Roles<br>
+                {% for mba in mbas %}
+                    <input type='checkbox' name='category' value='{{ mba.id }}'>{{ mba.name }}</input><br>
+                {% endfor %}
             </div>
             <button type='submit'>Apply</button>
         </form>
     </div>
-    <hr>
     <div id="main">
         {% block main %}
         {% endblock %}
