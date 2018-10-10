@@ -116,6 +116,9 @@ class WatchView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        #submitted video
+        submitted_video = self.object.submitted_videos.filter(uploader=self.request.user).first()
+
         #upnext
         previous_url = self.request.META.get('HTTP_REFERER')
         path = urlparse(previous_url).path
@@ -141,6 +144,7 @@ class WatchView(DetailView):
         upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
         cache.set('upnext', upnext)
 
+        context['submitted_video'] = submitted_video
         context['upnext'] = upnext
 
         return context
@@ -169,7 +173,7 @@ def submit_video(request):
         #submit_to.submitted_videos.add(video)
         Submission.objects.create(video=submit_to, submitted_video=video,
             date_submitted=date.today())
-    return HttpResponse()
+    return HttpResponse(video.title)
 
 # class UploadView(CreateView):
 #     model = Video

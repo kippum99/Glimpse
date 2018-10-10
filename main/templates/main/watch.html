@@ -11,23 +11,29 @@
                 $('#save').attr('src', '{% static 'main/heart.png' %}');
             });
         });
+
+        {% if submitted_video %}
+            $('#submit-my-video').prop('disabled', true);
+        {% endif %}
     });
 
     function submit_my_video(){
         container = document.getElementById('submit-container');
         container.innerHTML += 'Select a video you want to submit:<br>';
+        //$.load
         $.get('/submit_my_video', function(data){
             container.innerHTML += data;
         });
     }
 
     function submit_video(evt){
-        $.post('/submit_video', {video: evt.target.dataset.id, submit_to: {{ video.pk }}, csrfmiddlewaretoken: '{{ csrf_token }}'});
-
-        container = document.getElementById('submit-container');
-
-        // Video name
-        container.innerHTML = 'Your video has been successfully submitted!';
+        $.post('/submit_video', {video: evt.target.dataset.id,
+            submit_to: {{ video.pk }}, csrfmiddlewaretoken: '{{ csrf_token }}'},
+            function(data){
+                container = document.getElementById('submit-container');
+                container.innerHTML = data + ' has been successfully submitted!';
+                $('#submit-my-video').prop('disabled', true);
+            });
     }
 </script>
 {% endblock %}
@@ -61,13 +67,16 @@
 
     <div id="label-container">
         <div id="video-actions">
-            <button onclick='submit_my_video()'>Submit my video</button>
+            <button id='submit-my-video' onclick='submit_my_video()'>Submit my video</button>
             {% if upnext %}
                 <a href='{% url 'watch' upnext.0.id %}'>Skip / Next</a>
             {% endif %}
         </div>
         <hr>
         <div id='submit-container'>
+            {% if submitted_video %}
+                {{ submitted_video }} has been successfully submitted!
+            {% endif %}
         </div>
     </div>
 
