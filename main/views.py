@@ -12,24 +12,26 @@ from django.shortcuts import redirect
 from urllib.parse import urlparse
 
 from .forms import JSVideoForm, EmpVideoForm, JSSignUpForm, EmpSignUpForm
-from .models import User, Category, Jobtype, Tribal, Video
+from .models import User, Category, Experience, Jobtype, Tribal, Video
 
 @login_required
 def index(request):
-    videos = Video.objects.all()
-    #videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
-    # if 'category' in request.GET:
-    #     videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
-    # if 'func' in request.GET:
+    user_is_js = request.user.is_js
+    videos = Video.objects.exclude(uploader__is_js=user_is_js)
+    if 'category' in request.GET:
+        videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
+    if 'tribal' in request.GET:
+        videos = videos.filter(tribals__in=request.GET.getlist('tribal')).distinct()
+    #if 'func' in request.GET:
     #     videos = videos.filter(funcs=request.GET['func'])
     #     request.user.groups.first()
     context = {
         'videos': videos,
-        #'group': request.user.groups.first(),
         'techs': Category.objects.filter(techrole=1),
         'mbas': Category.objects.filter(techrole=0),
         'tribals': Tribal.objects.all(),
         'jobtypes': Jobtype.objects.all(),
+        'experiences': Experience.objects.all(),
     }
     return render(request, 'main/search.html', context)
 
@@ -40,8 +42,8 @@ def search(request):
     videos = Video.objects.all()
     #videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
     videos = videos.filter(title__icontains=video_title)
-    if 'industry' in request.GET:
-        videos = videos.filter(categories__in=request.GET.getlist('industry')).distinct()
+    if 'category' in request.GET:
+        videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
     if 'func' in request.GET:
         videos = videos.filter(funcs=request.GET['func'])
 
@@ -120,14 +122,15 @@ class WatchView(DetailView):
             else:
                 query = QueryDict(urlparse(previous_url).query)
                 category = query.get('category')
-                func = query.get('func')
+                #func = quer.
 
-                upnext = Video.objects.all()
-                #upnext = Video.objects.exclude(uploader__groups=self.request.user.groups.first())
+                user_is_js = self.request.user.is_js
+                upnext = Video.objects.exclude(uploader__is_js=user_is_js)
+
                 if category is not None:
                     upnext = upnext.filter(categories=category)
-                if func is not None:
-                    upnext = upnext.filter(funcs=func)
+                # if func is not None:
+                #     upnext = upnext.filter(funcs=func)
                 cache.set('upnext', upnext)
 
         upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
