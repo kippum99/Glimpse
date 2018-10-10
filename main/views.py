@@ -1,3 +1,6 @@
+from urllib.parse import urlparse
+from datetime import date
+
 from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.http import HttpResponse, HttpResponseRedirect, QueryDict
@@ -9,10 +12,8 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.shortcuts import redirect
 
-from urllib.parse import urlparse
-
 from .forms import JSVideoForm, EmpVideoForm, JSSignUpForm, EmpSignUpForm
-from .models import User, Category, Experience, Jobtype, Tribal, Video
+from .models import Category, Experience, Jobtype, Submission, Tribal, User, Video
 
 @login_required
 def index(request):
@@ -165,7 +166,9 @@ def submit_video(request):
     if request.method == 'POST':
         video = Video.objects.get(pk=request.POST.get('video'))
         submit_to = Video.objects.get(pk=request.POST.get('submit_to'))
-        submit_to.submitted_videos.add(video)
+        #submit_to.submitted_videos.add(video)
+        Submission.objects.create(video=submit_to, submitted_video=video,
+            date_submitted=date.today())
     return HttpResponse()
 
 # class UploadView(CreateView):

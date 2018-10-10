@@ -1,3 +1,4 @@
+from django.contrib import admin
 from django.contrib.auth.models import AbstractUser
 from localflavor.us.models import USStateField
 from django.db import models
@@ -56,10 +57,24 @@ class Video(models.Model):
     experiences = models.ManyToManyField(Experience, related_name='videos')
 
     savers = models.ManyToManyField(User, related_name='saved_videos')
-    submitted_videos = models.ManyToManyField('self', related_name='submitted_to', symmetrical=False)
+    submitted_videos1 = models.ManyToManyField('self', related_name='submitted_too', symmetrical=False)
+    submitted_videos = models.ManyToManyField('self', related_name='submitted_to', symmetrical=False, through='Submission')
 
     def get_absolute_url(self):
         return reverse('watch', kwargs={'pk': self.pk})
 
     def __str__(self):
         return f'{self.title}'
+
+class Submission(models.Model):
+    video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='video')
+    submitted_video = models.ForeignKey(Video, on_delete=models.CASCADE, related_name='submitted_video')
+    date_submitted = models.DateField()
+
+
+class SubmissionInline(admin.TabularInline):
+    model = Submission
+    fk_name = 'video'
+
+class VideoAdmin(admin.ModelAdmin):
+    inlines=(SubmissionInline,)
