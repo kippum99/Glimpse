@@ -194,8 +194,21 @@ class UploadView(CreateView):
         return super().form_valid(form)
 
 class VideoEdit(UpdateView):
+    form_class = JSVideoForm
     model = Video
-    fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
+    template_name_suffix = '_update_js'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['test'] = 'hello'
+        context['submitted_to'] = self.object.submitted_to.all
+        context['submitted_videos'] = self.object.submitted_videos.all
+        return context
+    # def get(self,request):
+    #     if request.user.is_js: #if user is job seeker
+    #         self.form_class = JSVideoForm
+    #     elif request.user.is_emp:
+    #         self.form_class = EmpVideoForm
 
 class VideoDelete(DeleteView):
     model = Video

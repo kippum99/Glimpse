@@ -56,7 +56,7 @@ class Video(models.Model):
     experiences = models.ManyToManyField(Experience, related_name='videos')
 
     savers = models.ManyToManyField(User, related_name='saved_videos')
-    submitted_videos = models.ManyToManyField('self', related_name='submitted_to')
+    submitted_videos = models.ManyToManyField('self', related_name='submitted_to', symmetrical=False)
 
     def get_absolute_url(self):
         return reverse('watch', kwargs={'pk': self.pk})

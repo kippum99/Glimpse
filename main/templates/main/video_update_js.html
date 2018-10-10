@@ -1,0 +1,57 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+
+{% block content %}
+    <div style='padding:20px;height:400px'>
+        <div style='display:block'>
+            <a href='{% url 'account' %}' style='color:#6abad1; font-size: 20px; font-weight:bold; display:inline'>My Account</a>
+        </div>
+
+        <form action='' method='post' enctype='multipart/form-data'>
+            {% csrf_token %}
+            <div style='float:left;width:30%'>
+                {{ form.file }}
+            </div>
+            <div style='float:left;width:40%'>
+                Title {{ form.title }}<br>
+                Background / Experience {{ form.categories }}<br><br>
+                <b>Preferences</b><br>
+                Job Type {{ form.jobtypes }}<br>
+                Tribal Interests {{ form.tribals }}<br>
+            </div>
+            <button type='submit'>Update</button>
+            <a href='{% url 'delete' form.instance.pk %}'>Delete</a>
+        </form>
+    </div>
+
+    <div style='padding:20px;display:block'>
+        <h6 style='display:inline'>Submitted To</h6>
+        <div class='video-grid'>
+            {% for video in submitted_to %}
+                <div class='video-item'>
+                    <div class='thumbnail'>
+                        <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                            <img src='{% static 'main/thumbnail.png' %}'>
+                        </a>
+                    </div>
+                    <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <h6 style='display:inline'>Videos Received for Your Review</h6>
+        <div class='video-grid'>
+            {% for video in submitted_videos %}
+                <div class='video-item'>
+                    <div class='thumbnail'>
+                        <a class='thumbnail' href='{% url 'watch' video.id %}'>
+                            <img src='{% static 'main/thumbnail.png' %}'>
+                        </a>
+                    </div>
+                    <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

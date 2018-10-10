@@ -5,7 +5,6 @@ urlpatterns = [
     #path('', views.IndexView.as_view(), name='index'),
     path('', views.index, name='index'),
     path('search', views.search, name='search'),
-    #path('upload', views.upload, name='upload'),
     path('upload', views.UploadView.as_view(), name='upload'),
     path('edit/<int:pk>', views.VideoEdit.as_view(), name='edit'),
     path('delete/<int:pk>', views.VideoDelete.as_view(), name='delete'),
