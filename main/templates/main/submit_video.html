@@ -7,7 +7,7 @@
                     <img src='{% static 'main/thumbnail.png' %}'>
                 </div>
                 {{ video.title }}
-                <button type='submit'>Submit</button>
+                <button onclick='submit_video(event)' data-id='{{ video.pk }}'>Submit</button>
             </div>
         {% endfor %}
     {% else %}

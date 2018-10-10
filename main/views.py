@@ -66,10 +66,6 @@ def account(request):
     }
     return render(request, 'main/account.html', context)
 
-def submit_video(requests):
-    #Harvard Django 1:14
-    return
-
 def login_view(request):
     username = request.POST['username']
     password = request.POST['password']
@@ -151,11 +147,19 @@ def save_video(request):
     return HttpResponse()
 
 @login_required
-def submit_video(request):
+def submit_my_video(request):
     context = {
         'videos': Video.objects.filter(uploader=request.user)
     }
     return render(request, 'main/submit_video.html', context)
+
+@login_required
+def submit_video(request):
+    if request.method == 'POST':
+        video = Video.objects.get(pk=request.POST.get('video'))
+        submit_to = Video.objects.get(pk=request.POST.get('submit_to'))
+        submit_to.submitted_videos.add(video)
+    return HttpResponse()
 
 # class UploadView(CreateView):
 #     model = Video
