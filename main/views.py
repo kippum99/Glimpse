@@ -22,9 +22,9 @@ def index(request):
         videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
     if 'tribal' in request.GET:
         videos = videos.filter(tribals__in=request.GET.getlist('tribal')).distinct()
-    #if 'func' in request.GET:
-    #     videos = videos.filter(funcs=request.GET['func'])
-    #     request.user.groups.first()
+    if 'jobtype' in request.GET:
+        videos = videos.filter(jobtypes__in=request.GET.getlist('jobtype')).distinct()
+
     context = {
         'videos': videos,
         'techs': Category.objects.filter(techrole=1),
@@ -37,20 +37,25 @@ def index(request):
 
 @login_required
 def search(request):
+    user_is_js = request.user.is_js
     video_title = request.GET['title_search']
 
-    videos = Video.objects.all()
-    #videos = Video.objects.exclude(uploader__groups=request.user.groups.first())
+    videos = Video.objects.exclude(uploader__is_js=user_is_js)
     videos = videos.filter(title__icontains=video_title)
     if 'category' in request.GET:
         videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
-    if 'func' in request.GET:
-        videos = videos.filter(funcs=request.GET['func'])
+    if 'tribal' in request.GET:
+        videos = videos.filter(tribals__in=request.GET.getlist('tribal')).distinct()
+    if 'jobtype' in request.GET:
+        videos = videos.filter(jobtypes__in=request.GET.getlist('jobtype')).distinct()
 
     context = {
         'videos': videos,
-        #'group': request.user.groups.first(),
-        'industries': Category.objects.all(),
+        'techs': Category.objects.filter(techrole=1),
+        'mbas': Category.objects.filter(techrole=0),
+        'tribals': Tribal.objects.all(),
+        'jobtypes': Jobtype.objects.all(),
+        'experiences': Experience.objects.all(),
     }
     return render(request, 'main/search.html', context)
 
@@ -108,6 +113,9 @@ class WatchView(DetailView):
     template_name = 'main/watch.html'
 
     def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        #upnext
         previous_url = self.request.META.get('HTTP_REFERER')
         path = urlparse(previous_url).path
 
@@ -132,7 +140,6 @@ class WatchView(DetailView):
         upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
         cache.set('upnext', upnext)
 
-        context = super().get_context_data(**kwargs)
         context['upnext'] = upnext
 
         return context
@@ -166,17 +173,20 @@ def submit_video(request):
 #     fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
 
 class UploadView(CreateView):
+    #edit
     form_class = JSVideoForm
     template_name = 'main/upload_js.html'
 
     def get(self, request):
         if request.user.is_js: #if user is job seeker
             self.form_class = JSVideoForm
+            form = JSVideoForm(None)
             self.template_name = 'main/upload_js.html'
         elif request.user.is_emp: # if user is employer
             self.form_class = EmpVideoForm
+            tribals = request.user.employer.tribals.all
+            form = EmpVideoForm(initial={'tribals': tribals})
             self.template_name = 'main/upload_emp.html'
-        form = self.form_class(None)
         return render(request, self.template_name, {'form': form})
 
     def form_valid(self, form):
@@ -185,7 +195,7 @@ class UploadView(CreateView):
 
 class VideoEdit(UpdateView):
     model = Video
-    fields = ['title', 'file', 'uploader', 'categories', 'funcs', 'experiences', 'jobtypes']
+    fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
 
 class VideoDelete(DeleteView):
     model = Video

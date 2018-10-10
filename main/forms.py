@@ -43,7 +43,7 @@ class EmpSignUpForm(UserCreationForm):
 class EmpVideoForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ['file', 'title', 'jobtypes', 'city', 'state', 'remote', 'role', 'categories', 'tribals']
+        fields = ['file', 'title', 'jobtypes', 'city', 'state', 'remote', 'role', 'categories', 'tribals', 'experiences']
 
 class JSVideoForm(forms.ModelForm):
     class Meta:
