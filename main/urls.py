@@ -11,6 +11,7 @@ urlpatterns = [
     path('account', views.account, name='account'),
     path('watch/<int:pk>', views.WatchView.as_view(), name='watch'),
     re_path(r'^save_video/$', views.save_video, name='save_video'),
+    re_path(r'^unsave_video/$', views.unsave_video, name='unsave_video'),
     path('submit_my_video', views.submit_my_video, name='submit_my_video'),
     path('submit_video', views.submit_video, name='submit_video'),
     path('accounts/', include('django.contrib.auth.urls')),

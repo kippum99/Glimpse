@@ -1,6 +1,18 @@
 {% extends 'main/layout.html' %}
 {% load static %}
 
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script>
+    function unsave_video(video_id){
+        $.get('/unsave_video', {video_id: video_id}, function(data){
+            console.log('unsaved');
+            $(`.video-item[data-id=${video_id}]`).hide();
+        });
+    }
+</script>
+{% endblock %}
+
 {% block content %}
     <div style='padding:20px'>
         <h4 style='color:#6abad1'>My Account</h4>
@@ -27,7 +39,7 @@
                 <h6>My Saved Videos</h6>
                 <div class='video-grid'>
                     {% for video in saved_videos %}
-                        <div class='video-item'>
+                        <div class='video-item' data-id='{{ video.pk }}'>
                             <div class='thumbnail'>
                                 <a class='thumbnail' href='{% url 'watch' video.id %}'>
                                     <img src='{% static 'main/thumbnail.png' %}'>
@@ -35,6 +47,7 @@
                             </div>
                             <a href='{% url 'watch' video.id %}'>{{ video.title }}</a><br>
                             <div class='remove-text-container'>
+                                <button onclick='unsave_video({{ video.pk }})'>Remove</button>
                                 <a class='small-text-blue' href='{% url 'delete' video.pk %}'>Remove</a>
                             </div>
                         </div>

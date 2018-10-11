@@ -5,11 +5,26 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 <script>
     $(document).ready(function(){
+        var saved = false;
+
+        {% if saved %}
+            $('#save').attr('src', '{% static 'main/heart.png' %}');
+            saved = true;
+        {% endif %}
+
         $('#save').click(function(){
             video_id = {{ video.pk }};
-            $.get('/save_video', {video_id: video_id}, function(data){
-                $('#save').attr('src', '{% static 'main/heart.png' %}');
-            });
+            if (saved==true) {
+                $.get('/unsave_video', {video_id: video_id}, function(data){
+                    $('#save').attr('src', '{% static 'main/empty_heart.png' %}');
+                    saved = false;
+                });
+            } else {
+                $.get('/save_video', {video_id: video_id}, function(data){
+                    $('#save').attr('src', '{% static 'main/heart.png' %}');
+                    saved = true;
+                });
+            }
         });
 
         {% if submitted_video %}

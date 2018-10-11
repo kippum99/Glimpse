@@ -124,6 +124,11 @@ class WatchView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        #saved boolean
+        saved = False
+        if self.request.user in self.object.savers.all():
+            saved = True
+
         #submitted video
         submitted_video = self.object.submitted_videos.filter(uploader=self.request.user).first()
 
@@ -152,6 +157,7 @@ class WatchView(DetailView):
         upnext = cache.get('upnext').exclude(pk=self.kwargs['pk'])
         cache.set('upnext', upnext)
 
+        context['saved'] = saved
         context['submitted_video'] = submitted_video
         context['upnext'] = upnext
 
@@ -164,6 +170,15 @@ def save_video(request):
     if request.method == 'GET':
         video_id = request.GET['video_id']
         Video.objects.get(pk=video_id).savers.add(user_id)
+    return HttpResponse()
+
+@login_required
+def unsave_video(request):
+    video_id = None
+    user_id = request.user.id
+    if request.method == 'GET':
+        video_id = request.GET['video_id']
+        Video.objects.get(pk=video_id).savers.remove(user_id)
     return HttpResponse()
 
 @login_required
@@ -182,10 +197,6 @@ def submit_video(request):
         Submission.objects.create(video=submit_to, submitted_video=video,
             date_submitted=date.today())
     return HttpResponse(video.title)
-
-# class UploadView(CreateView):
-#     model = Video
-#     fields = ['title', 'file', 'uploader', 'categories', 'experiences', 'jobtypes']
 
 class UploadView(CreateView):
     #edit
@@ -248,33 +259,3 @@ class EmpSignUpView(CreateView):
         user = form.save()
         login(self.request, user)
         return redirect('index')
-
-# class UserFormView(View):
-#     form_class = UserForm
-#     template_name = 'registration/signup.html'
-#
-#     def get(self, request):
-#         form = self.form_class(None)
-#         return render(request, self.template_name, {'form': form})
-#
-#     def post(self, request):
-#         form = self.form_class(request.POST)
-#
-#         if form.is_valid():
-#             user = form.save(commit=False)
-#
-#             username = form.cleaned_data['username']
-#             password = form.cleaned_data['password']
-#             group = form.cleaned_data['group']
-#             user.set_password(password)
-#             user.save()
-#             user.groups.add(group)
-#
-#             user = authenticate(username=username, password=password)
-#
-#             if user is not None:
-#                 if user.is_active:
-#                     login(request, user)
-#                     return HttpResponseRedirect(reverse('index'))
-#
-#         return render(request, self.template_name, {'form': form})
