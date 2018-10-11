@@ -39,6 +39,20 @@
                             </div>
                         </div>
                     {% endfor %}
+
+                    {% for submission in submissions %}
+                        <div class='video-item'>
+                            <div class='thumbnail'>
+                                <a class='thumbnail' href='{% url 'watch' submission.video.id %}'>
+                                    <img src='{% static 'main/thumbnail.png' %}'>
+                                </a>
+                            </div>
+                            <a href='{% url 'watch' submission.video.id %}'>{{ submission.video.title }}</a><br>
+                            <div class='remove-text-container'>
+                                <p class='small-text-green'>Submitted {{ submission.submitted_video.title }} on {{ submission.date_submitted }}</p>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
             </div>
         </div>

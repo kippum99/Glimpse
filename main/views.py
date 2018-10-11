@@ -71,9 +71,12 @@ def upload(request):
 def account(request):
     uploaded_videos = Video.objects.filter(uploader=request.user)
     saved_videos = Video.objects.filter(savers=request.user)
+    submissions = Submission.objects.filter(submitted_video__uploader=request.user)
+
     context = {
         'uploaded_videos': uploaded_videos,
         'saved_videos': saved_videos,
+        'submissions': submissions,
     }
     return render(request, 'main/account.html', context)
 
