@@ -48,4 +48,4 @@ class EmpVideoForm(forms.ModelForm):
 class JSVideoForm(forms.ModelForm):
     class Meta:
         model = Video
-        fields = ['file', 'title', 'jobtypes', 'categories', 'tribals']
+        fields = ['file', 'title', 'role', 'jobtypes', 'categories', 'tribals']

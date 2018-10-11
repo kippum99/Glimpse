@@ -46,6 +46,8 @@ def search(request):
 
     videos = Video.objects.exclude(uploader__is_js=user_is_js)
     videos = videos.filter(title__icontains=video_title)
+    if 'role' in request.GET:
+        videos = videos.filter(role=request.GET['role']).all()
     if 'category' in request.GET:
         videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
     if 'tribal' in request.GET:

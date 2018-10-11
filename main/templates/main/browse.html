@@ -13,9 +13,9 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            role_id = getAllUrlParams().role;
+            role = getAllUrlParams().role;
             tribal_id = getAllUrlParams().tribal;
-            active_role = document.querySelector(`.role-btn[data-id='${role_id}']`);
+            active_role = document.querySelector(`.role-btn[data-role='${role}']`);
             active_tribal = document.querySelector(`.tribal-btn[data-id='${tribal_id}']`);
 
             if (window.active_role) {
@@ -95,7 +95,7 @@
             filters.style.display = 'block';
         }
 
-        function selectRole(evt, id) {
+        function selectRole(evt, role) {
             // change css classname for active display
             var roleButtons = document.querySelectorAll('.role-btn');
             roleButtons.forEach(button => {
@@ -105,7 +105,7 @@
 
             //get request parameters
             params = getAllUrlParams();
-            params['role'] = id;
+            params['role'] = role;
             applyFilters(params);
         }
 
@@ -159,8 +159,8 @@
 
 {% block content %}
     <div class='search-functions'>
-        <button class='role-btn' onclick='selectRole(event, 1)' data-id='1'>TECH TALENT</button>
-        <button class='role-btn' onclick='selectRole(event, 2)' data-id='2'>MBAs / MANAGEMENT</button>
+        <button class='role-btn' onclick='selectRole(event, "t")' data-role='t'>TECH TALENT</button>
+        <button class='role-btn' onclick='selectRole(event, "m")' data-role='m'>MBAs / MANAGEMENT</button>
 
         <form id='title-search' action="{% url 'search' %}" class="search" method="get" style='display:inline'>
             <input name="title_search" type="text" placeholder="Search by Job Title or Role">
