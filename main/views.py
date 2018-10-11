@@ -19,6 +19,9 @@ from .models import Category, Experience, Jobtype, Submission, Tribal, User, Vid
 def index(request):
     user_is_js = request.user.is_js
     videos = Video.objects.exclude(uploader__is_js=user_is_js)
+
+    if 'role' in request.GET:
+        videos = videos.filter(role=request.GET['role']).all()
     if 'category' in request.GET:
         videos = videos.filter(categories__in=request.GET.getlist('category')).distinct()
     if 'tribal' in request.GET:

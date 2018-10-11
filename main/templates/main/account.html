@@ -33,7 +33,10 @@
                                     <img src='{% static 'main/thumbnail.png' %}'>
                                 </a>
                             </div>
-                            <a href='{% url 'watch' video.id %}'>{{ video.title }}</a>
+                            <a href='{% url 'watch' video.id %}'>{{ video.title }}</a><br>
+                            <div class='remove-text-container'>
+                                <a class='small-text-blue' href='{% url 'delete' video.pk %}'>Remove</a>
+                            </div>
                         </div>
                     {% endfor %}
                 </div>

@@ -13,25 +13,17 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var source = document.getElementById('filter-selected-template').innerHTML;
-            var template = Handlebars.compile(source);
+            role_id = getAllUrlParams().role;
+            tribal_id = getAllUrlParams().tribal;
+            active_role = document.querySelector(`.role-btn[data-id='${role_id}']`);
+            active_tribal = document.querySelector(`.tribal-btn[data-id='${tribal_id}']`);
 
-            category_id = getAllUrlParams().category;
-            func_id = getAllUrlParams().func;
-            active_category = document.querySelector(`#category-container button[data-id='${category_id}']`);
-            active_func = document.querySelector(`#func-container button[data-id='${func_id}']`);
-
-            if (window.active_category) {
-                active_category.className += ' active';
-                var context = {filter_name: active_category.innerHTML, filter_type: 'category'};
-                var html = template(context);
-                document.getElementById('filters-selected').innerHTML += html;
+            if (window.active_role) {
+                active_role.className += ' active';
             }
-            if (window.active_func) {
-                active_func.className += ' active';
-                var context = {filter_name: active_func.innerHTML, filter_type: 'func'};
-                var html = template(context);
-                document.getElementById('filters-selected').innerHTML += html;
+
+            if (window.active_tribal) {
+                active_tribal.className += ' active';
             }
         });
 
@@ -103,31 +95,31 @@
             filters.style.display = 'block';
         }
 
-        function selectCategory(evt, category) {
+        function selectRole(evt, id) {
             // change css classname for active display
-            var categoryButtons = document.querySelectorAll('#category-container .filter-button');
-            categoryButtons.forEach(button => {
+            var roleButtons = document.querySelectorAll('.role-btn');
+            roleButtons.forEach(button => {
                 button.className = button.className.replace(' active', '');
-            });
+            })
             evt.currentTarget.className += ' active';
 
-            // get request parameters
+            //get request parameters
             params = getAllUrlParams();
-            params['category'] = category;
+            params['role'] = id;
             applyFilters(params);
         }
 
-        function selectFunc(evt, func) {
+        function selectTribal(evt, id) {
             // change css classname for active display
-            var funcButtons = document.querySelectorAll('#func-container .filter-button');
-            funcButtons.forEach(button => {
+            var tribalButtons = document.querySelectorAll('.tribal-btn');
+            tribalButtons.forEach(button => {
                 button.className = button.className.replace(' active', '');
-            });
+            })
             evt.currentTarget.className += ' active';
 
-            // get request parameters
+            //get request parameters
             params = getAllUrlParams();
-            params['func'] = func;
+            params['tribal'] = id;
             applyFilters(params);
         }
 
@@ -139,6 +131,7 @@
             location.href = window.location.origin + window.location.pathname + queryString;
         }
 
+//irrelevant now
         function removeFilter(evt) {
             evt.currentTarget.parentElement.style.display='none';
             params = getAllUrlParams();
@@ -166,27 +159,25 @@
 
 {% block content %}
     <div class='search-functions'>
-        <!-- search not index -->
-        <form action='{% url 'index' %}' method="get">
-            <input type="submit" value='1' name='role' id='tech-btn'/>
-        </form>
-        <a>TECH TALENT</a>
-        <a>MBAs / MANAGEMENT</a>
+        <button class='role-btn' onclick='selectRole(event, 1)' data-id='1'>TECH TALENT</button>
+        <button class='role-btn' onclick='selectRole(event, 2)' data-id='2'>MBAs / MANAGEMENT</button>
+
         <form id='title-search' action="{% url 'search' %}" class="search" method="get" style='display:inline'>
             <input name="title_search" type="text" placeholder="Search by Job Title or Role">
             <button>Search</button>
         </form>
         <button onclick='showFilters()'>Advanced Filters</button>
+
         <div id='filter-bar'>
             <form action='{% url 'index' %}' method='get' class="search" style='display:inline-block'>
                 <input name="location_search" type="text" placeholder="Los Angeles, CA">
                 <button>Search</button>
             </form>
-            <a>STARTUPS</a>
-            <a>FORTUNE 500</a>
-            <a>CONSULTING</a>
-            <a>BUY-SIDE</a>
-            <a>SELL-SIDE</a>
+            <button class='tribal-btn' onclick='selectTribal(event, 1)' data-id='1'>STARTUPS</button>
+            <button class='tribal-btn' onclick='selectTribal(event, 2)' data-id='2'>FORTUNE 500</button>
+            <button class='tribal-btn' onclick='selectTribal(event, 3)' data-id='3'>CONSULTING</button>
+            <button class='tribal-btn' onclick='selectTribal(event, 4)' data-id='4'>BUY-SIDE</button>
+            <button class='tribal-btn' onclick='selectTribal(event, 5)' data-id='5'>SELL-SIDE</button>
         </div>
     </div>
     <hr>
