@@ -65,9 +65,6 @@ def search(request):
     }
     return render(request, 'main/search.html', context)
 
-def upload(request):
-    return render(request, 'main/upload.html')
-
 def account(request):
     uploaded_videos = Video.objects.filter(uploader=request.user)
     saved_videos = Video.objects.filter(savers=request.user)
@@ -200,6 +197,7 @@ def submit_video(request):
 
 class UploadView(CreateView):
     #edit
+    success_url = reverse_lazy('account')
     form_class = JSVideoForm
     template_name = 'main/upload_js.html'
 
@@ -223,10 +221,10 @@ class VideoEdit(UpdateView):
     form_class = JSVideoForm
     model = Video
     template_name_suffix = '_update_js'
+    success_url = reverse_lazy('account')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['test'] = 'hello'
         context['submitted_to'] = self.object.submitted_to.all
         context['submitted_videos'] = self.object.submitted_videos.all
         return context

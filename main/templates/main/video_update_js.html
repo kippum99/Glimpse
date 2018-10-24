@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block content %}
-    <div style='padding:20px;height:400px'>
+    <div style='padding:20px;height:450px'>
         <div style='display:block'>
             <a href='{% url 'account' %}' style='color:#6abad1; font-size: 20px; font-weight:bold; display:inline'>My Account</a>
         </div>
@@ -15,6 +15,7 @@
             <div style='float:left;width:40%'>
                 Title {{ form.title }}<br>
                 Background / Experience {{ form.categories }}<br><br>
+                Are you interested in a Technical or MBA/Management-type Role {{ form.role }}<br><br>
                 <b>Preferences</b><br>
                 Job Type {{ form.jobtypes }}<br>
                 Tribal Interests {{ form.tribals }}<br>
